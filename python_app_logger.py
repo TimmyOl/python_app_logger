@@ -15,68 +15,66 @@
 """This is a logger to use with any python script, we can log both to console and file
 
 Usage:
-There is three different loggers, console logger, file logger and both file and console logger.
-Most usual is both since INFO will be printed to console and WARNING or ERROR will be written to file.
+from logger import AppLogger
 
-Logger for file write:
-logger = app_logger.get_file_handler(__name__)
+# Create an instance of the logger
+logger = AppLogger(__name__).get_logger()
 
-Logger for console:
-logger = app_logger.get_file_handler(__name__)
-
-Logger for both file and console:
-logger = app_logger.get_logger(__name__)
-
-To write a log message add following code anywhere in the code where the logger is imported and created.
-Log levels:
-logger.info('This is shown in console')
-logger.warning('This is shown in console and added to file')
-logger.error('This is shown in console and added to file')
-
-Returns:
-Logger: A logger with file handler, stream handler or both
-    """
+# Use the logger to log messages
+logger.info("This is shown in the console")
+logger.warning("This is shown in the console and added to the file")
+logger.error("This is shown in the console and added to the file")
+"""
 
 import logging
 
-_log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+class AppLogger:
+    _log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+    version = 1.1
 
-def get_file_handler(log_file_name):
-    """Write log warnings level to a file
+    def __init__(self, name):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(logging.INFO)
+        self.logger.addHandler(self._get_file_handler(name))
+        self.logger.addHandler(self._get_stream_handler())
 
-    Args:
-        log_file_name (string): The name of the logfile
+    def get_file_handler(self, log_file_name):
+        """Write log warnings level to a file
 
-    Returns:
-        FileHandler: FileHandler for logging warnings to file
-    """
-    file_handler = logging.FileHandler(f"{log_file_name}.log")
-    file_handler.setLevel(logging.WARNING)
-    file_handler.setFormatter(logging.Formatter(_log_format))
-    return file_handler
+        Args:
+            log_file_name (string): The name of the logfile
 
-def get_stream_handler():
-    """Write log info level to console
+        Returns:
+            FileHandler: FileHandler for logging warnings to file
+        """
+        file_handler = logging.FileHandler(f"{log_file_name}.log")
+        file_handler.setLevel(logging.WARNING)
+        file_handler.setFormatter(logging.Formatter(self._log_format))
+        return file_handler
 
-    Returns:
-        StreamHandler: StreamHandler for logging info to console
-    """
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    stream_handler.setFormatter(logging.Formatter(_log_format))
-    return stream_handler
+    def get_stream_handler(self):
+        """Write log info level to console
 
-def get_logger(name):
-    """Get the logger with both file log and console log on different levels
+        Returns:
+            StreamHandler: StreamHandler for logging info to console
+        """
+        stream_handler = logging.StreamHandler()
+        stream_handler.setLevel(logging.INFO)
+        stream_handler.setFormatter(logging.Formatter(self._log_format))
+        return stream_handler
 
-    Args:
-        name (string): The name of the logger
+    def get_logger(self):
+        """Get the logger with both file log and console log on different levels
 
-    Returns:
-        logging: A logging object to use when logging in the code
-    """
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.INFO)
-    logger.addHandler(get_file_handler(name))
-    logger.addHandler(get_stream_handler())
-    return logger
+        Args:
+            name (string): The name of the logger
+
+        Returns:
+            logging: A logging object to use when logging in the code
+        """
+        return self.logger
+
+    def get_version(self):
+        """Get the current version of the logger
+        """
+        return self.version
