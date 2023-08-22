@@ -30,7 +30,7 @@ import logging
 
 class AppLogger:
     _log_format = f"%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
-    version = 1.1
+    version = 1.2
 
     def __init__(self, name):
         self.logger = logging.getLogger(name)
@@ -38,7 +38,7 @@ class AppLogger:
         self.logger.addHandler(self._get_file_handler(name))
         self.logger.addHandler(self._get_stream_handler())
 
-    def get_file_handler(self, log_file_name):
+    def _get_file_handler(self, log_file_name):
         """Write log warnings level to a file
 
         Args:
@@ -52,7 +52,7 @@ class AppLogger:
         file_handler.setFormatter(logging.Formatter(self._log_format))
         return file_handler
 
-    def get_stream_handler(self):
+    def _get_stream_handler(self):
         """Write log info level to console
 
         Returns:
